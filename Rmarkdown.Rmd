@@ -1,0 +1,1219 @@
+---
+title: "Rstudio Introduction"
+author: "Moreen Mbuki"
+date: "2024-09-13"
+output:
+  pdf_document: default
+  word_document: default
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+
+```{r}
+
+```
+
+
+```{r}
+# Addition 
+1+1
+```
+
+# Subtraction
+```{r}
+2-1
+```
+
+# Multipliaction
+
+```{r}
+3*3
+```
+
+# Division
+```{r}
+14/5
+```
+
+ # Exponent 
+```{r}
+
+2**10 ; 2^10
+```
+
+
+# Modulus (Remainder from Division)
+
+```{r}
+134 %% 3
+```
+
+# Generate numbers and the do the modulus
+```{r}
+(1:10) %% 2
+3 %% 2 #You should get 1 because 3 is not a multiple of 2 
+ 
+```
+
+#  Integer Division
+
+```{r}
+5 %/% 2 
+```
+
+# Logical Operations 
+# Less than 
+```{r}
+2<2 
+```
+
+
+# Less than or equal to 
+```{r}
+2<=2 
+```
+
+
+# Greater than 
+```{r}
+2>4
+```
+ 
+
+# Greater than or equal to 
+```{r}
+4>= 6
+```
+
+
+# Negation 
+```{r}
+!TRUE # or !T
+!(4>= 6)
+
+```
+
+# AND & used in if statements 
+```{r}
+TRUE & TRUE; TRUE & FALSE 
+T & T # TRUE
+T & F # FALSE
+F & F # FALSE  
+
+```
+
+
+#  OR | used on if statement 
+```{r}
+TRUE | TRUE; TRUE |FALSE
+T | T # TRUE
+T | F # True
+F | F # FALSE  
+
+T & T 
+```
+
+
+## R OBJECTS  To assign a value on R we used <- , = or ->
+
+```{r}
+a <- 1 # or 1-> a
+x = 2 # Mostly used in data frames
+100 -> y 
+
+```
+
+# Vector ,set of value or string 
+```{r}
+vect <- c("a"= 1 , "b" =2)
+vect
+
+```
+
+# To resign 
+```{r}
+ x=1
+ y=x
+
+```
+
+#  VARIABLE IN R 
+```{r}
+PI <- pi 
+PI
+class(PI) # To check the class
+typeof(PI)
+```
+
+
+# Type of variables
+```{r}
+n <- 55L;class(n);typeof(n) # Integer
+
+is.integer(n)
+n <- 55;class(n);typeof(n) # Numeric 
+is.numeric(n)
+
+```
+
+# Complex Numbers 
+```{r}
+z <- 9 + 3i; class(z) ; typeof(z)
+```
+
+
+# Boolean 
+```{r}
+true <- TRUE ; class(true)
+```
+
+
+# Character
+```{r}
+string <- "This is a string" ; class(string) ; is.character(string)
+
+string == tolower("This is a string")
+```
+
+
+#  DATA STRUCTURE AND DATA TYPES 
+#  Scalar - set of natural, real, complex, rational numbers
+# Vector - collection of identical objects of the same type ; can be a sequence
+```{r}
+v <- c(1, "R", T, FALSE, NA)
+v ; class(v) ; typeof(v)
+print(v)
+class(NA)
+class(1)
+
+v1 <- c(1, 4, T, FALSE, NA)
+class(v1)
+print(v1)
+
+```
+
+
+# Sequence 
+```{r}
+x1 <- seq(0, 2*pi , length.out = 50)
+x1 <- round(x1,2)
+signif(x1)
+
+x1
+
+length(x1)
+x <- seq(0, 2*5 , by =0.1282283)
+length(x)
+diff(x) # common difference
+unique(diff(x))
+
+```
+
+
+# Replication
+```{r}
+rep(1,10)
+rep(1, 100000) # number to replicate and how many times 
+rep(c(0,1), 50)
+rep(c(0,1),c(50,50))
+rep("String", 50)
+
+trunc(x) # Gives the whole numbers only
+ceiling(x)
+
+```
+
+# Sampling 
+# dice
+```{r}
+sample(6,size = 1)
+
+sample(6,size = 1, prob = rep(1/6,6))
+
+smpl <- sample(c("Male","Female"), size = 100, replace = TRUE, prob = rep(1/2,2))
+
+smpl <- sample(c("Male","Female"), size = 100, replace = TRUE, prob = c(30,70)/100)
+```
+
+
+# How many males and female do we expect to have
+
+```{r}
+tbl <- table(smpl)
+prop.table(table(tbl))
+
+sample(0:1, size = 100, replace = TRUE, prob = c(0.5,0.5)) -> y
+y
+sum(y == 1) ; sum(!y == 1); sum(y != 1)
+
+```
+
+
+
+# Stimulation 
+#  Setting the seed for Replication
+```{r}
+set.seed(11092024)
+x <- sample(c("Male", "Female"), size = 10, replace = TRUE)
+x
+
+```
+
+
+####################### R DAY 2 ##############################################
+# R Data types / Structure 
+# Types example - Scalars, vectors, list, arrays and data frame 
+
+
+```{r}
+table(x) # most applies on factor = binary , categorical , nominal, ordered 
+prop.table(table(x))
+```
+
+
+#  confusion matrix#
+
+```{r}
+set.seed(12092024) # used to fix randomness  
+age <- sample(0:120, size = 100)
+(brks <- seq(0,120 , by = 10))
+
+age_groups <-cut(age, breaks=brks, include.lowest = TRUE, right =TRUE ) 
+table(age_groups)
+```
+
+# To check the missing values
+```{r}
+age_groups == 0
+(which(is.na(age_groups)) -> id_missing)
+sum(table(age_groups)) # To check the count
+age_factor <- factor(age_groups)
+identical(age_factor,age_groups)
+
+```
+
+
+# Subsetting 
+```{r}
+age[age >= 80]
+
+freq <- table(age_groups)
+```
+
+#Bar plot 
+```{r}
+
+barplot(freq) 
+```
+
+## Use horizon = TRUE 
+```{r}
+barplot(freq, horiz = TRUE) 
+
+sum(age >= 80)
+mean(age >= 80) * 100 # gives probability 
+scatter.smooth(age)
+scatter.smooth(freq)
+```
+
+#  Pie plot 
+```{r}
+pie(freq)
+
+```
+
+```{r}
+set.seed(12092024)
+x<- sample(1:120, size = 1000, replace = TRUE);hist(x)
+hist(x, probability = TRUE)
+hist(x, )
+```
+
+# Density Plot 
+```{r}
+plot(density(x))
+```
+
+
+
+################################# R Day 3 ##################################### ######## DATA STIMULATION (Normal, Poisson, Exponential, Gamma and Beta) ###### ###############################################################################
+
+#  Uniform Distribution 
+```{r}
+unif_dist <- runif(1000) 
+```
+
+# Histogram 
+```{r, echo=TRUE, fig.height=4 , fig.width=5 }
+set.seed(13092024)
+unif_dist <- runif(1000) 
+hist(unif_dist, probability = TRUE,
+     main = "This is the title", col="pink")
+lines(density(unif_dist), col = "red", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(unif_dist), col = "blue", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("pink", "blue"), legend = c("Density", "Average"))
+```
+## This is my section 
+### This is a subsection
+#### This is asubsubsection
+
+
+```{r echo=TRUE,fig.height=4 , fig.width=5 }
+rbinom_dist <- rbinom(10000, 10, 0.5)
+table(rbinom_dist)
+hist(rbinom_dist, probability = TRUE, main = "This is the title", col="pink")
+lines(density(rbinom_dist), col = "red", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(rbinom_dist), col = "blue", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("pink", "blue"), legend = c("Density", "Average"))
+```
+```{r echo=TRUE,fig.height=4 , fig.width=5}
+gauss_dist <- rnorm(1000, mean = 0, sd= 1)
+hist(gauss_dist, probability = TRUE,breaks = 30,
+     main = "Histogram for Stabdard normal dist", col="pink")
+lines(density(gauss_dist), col = "red", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(gauss_dist), col = "blue", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("pink", "blue"), legend = c("Density", "Average"))
+```
+
+
+# Poisson Distribution 
+```{r}
+rpois(100,4)
+```
+
+```{r echo=TRUE, figo5,fig.height=4 , fig.width=10}
+set.seed(13092024)
+x <- rnorm(1000)
+y <- rnorm(1000, mean = 5, sd = 1.5)
+z <- 4 + 8*x +rnorm(1000) # Linear dependent between x and z 
+
+# My Scatter plot
+par(mfrow = c(1,2))
+plot(y ~ x , main = "Scatter Plot for x and y ",col = "blue", pch = 16)
+plot(z ~ x , main = "Scatter Plot for x and y ",col = "blue", pch = 16)
+```
+#Simulation 
+# 1) Standard normal distribution of size n = 1000
+#  - histogram 
+#  - overlay it density function
+# Binormial 
+# Poisson 
+# Exponential 
+
+
+# Standard Normal Distribution
+```{r}
+set.seed(16092024)
+stand_dist <- rnorm(100,mean = 0,sd = 1)
+hist(stand_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of standard naormal distribution", col = "turquoise")
+lines(density(stand_dist),col = "red", lwd = 2, lty = 2)
+abline(v = mean(stand_dist), col = "blue", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("red","blue"), 
+       legend = c("Density","Average"))
+
+
+
+```
+
+
+```{r}
+set.seed(16092024)
+binom_dist <- rbinom(10,2,0.5)
+hist(binom_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of Binormal distribution", col = "purple")
+lines(density(binom_dist),col = "pink", lwd = 2, lty = 2)
+abline(v = mean(binom_dist), col = "green", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("pink","green"), 
+       legend = c("Density","Average"))
+```
+
+
+```{r}
+set.seed(16092024)
+pois_dist <- rpois(1000,50)
+hist(pois_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of Poision distribution", col = "black")
+lines(density(pois_dist ),col = "yellow", lwd = 2, lty = 2)
+abline(v = mean(pois_dist ), col = "brown", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("yellow","brown"), 
+       legend = c("Density","Average"))
+```
+# Exponential distribution
+```{r}
+set.seed(16092024)
+Expon_dist <- rexp(1000, rate = 1)
+hist(Expon_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of Exponential distribution", col = "grey")
+lines(density(Expon_dist),col = "maroon", lwd = 2, lty = 2)
+abline(v = mean(Expon_dist ), col = "orange", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("maroon","orange"), 
+       legend = c("Density","Average"))
+```
+
+# Gamma distribution
+```{r}
+set.seed(16092024)
+Gamma_dist <- rgamma(100, 1,0.75)
+hist(Gamma_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of Gamma distribution", col = "wheat4")
+lines(density(Gamma_dist),col = "springgreen", lwd = 2, lty = 2)
+abline(v = mean(Gamma_dist ), col = "tan3", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("springgreen","tan3"), 
+       legend = c("Density","Average"))
+```
+
+
+```{r}
+set.seed(16092024)
+Student_dist <- rt(100, 0.9,37.62)
+hist(Student_dist,probability = TRUE,xlab = NULL, 
+     main =" Histogram  of Gamma distribution", col = "wheat4")
+lines(density(Student_dist),col = "springgreen", lwd = 2, lty = 2)
+abline(v = mean(Student_dist ), col = "tan3", lty = 2 , lwd = 2)
+legend("toplef", lty = c(2,2),
+       col = c("springgreen","tan3"), 
+       legend = c("Density","Average"))
+```
+# Matrice 
+```{r}
+(A <- matrix(1:25, nrow = 5, ncol = 5))
+```
+
+# () used to assign and print
+```{r, echo=TRUE}
+(B <- matrix(1:25, nrow = 5, ncol = 5, byrow = T)) # ncol is optional especially for a square matrix
+```
+
+```{r}
+(C <- matrix(1:25, ncol = 5, byrow = F))
+```
+
+```{r}
+(D <-matrix(c(1,2,3,4,5,6,7,8), nrow = 2))
+
+```
+
+```{r}
+rnorm(25,0,1)
+```
+
+```{r}
+(F <-matrix(rnorm(25,0,1), nrow = 5, ncol = 5))
+```
+#Tranpose 
+# Addition 
+# Subtraction
+# Multiplication by scalar 
+# Point -wise Multiplication
+# Trace
+
+#Tranpose
+```{r}
+(A <- matrix(1:25, nrow = 5, ncol = 5))
+(B <- matrix(1:25, nrow = 5, ncol = 5, byrow = T))
+#Transpose 
+(t(A))
+
+# Addition 
+(A + B)
+
+#Solve() get the inversible
+
+
+```
+```{r}
+v1 <- c(1,2,3,5)
+v2 <- c(4,5,6,8)
+v3 <- c(4,6,7,8)
+  
+(M <- cbind(v1,v2,v3))
+(N  <- rbind(v1,v2,v3))
+
+
+```
+
+```{r}
+M <- c(1,2,3,4,5,6,7,8,9)
+dim(M) <- c(3,3)
+dim(M)
+M
+```
+```{r}
+D <- matrix(c(2,2,1,-1), nrow =2, byrow = T)
+h <- c(0,2)
+solve(D,h)
+```
+
+```{r}
+M <- c(1,2,3,4,5,6,7,8,9)
+M[1:5]
+(M[(seq (1,length(M), by=2))])
+
+```
+# Multiplication
+```{r}
+(A <- matrix(1:25, nrow = 5, ncol = 5))
+(B <- matrix(1:25, nrow = 5, ncol = 5, byrow = T))
+
+dim(A)[2] == ncol(A)
+ncol(A) == nrow(B)
+A %*% B
+D <- matrix(c(1,2,4,2),nrow = 2,byrow = T)
+E <- (solve(D))
+D %*% E
+
+```
+# Rstudio 17/9/2024
+# ARRAY 
+#
+
+# Example od Climate data   log1, log2, ---- , logp 
+# 
+```{r}
+(aRray <- array(1:24, dim = c(2,3,2)))
+```
+
+
+```{r}
+class(aRray)
+```
+```{r}
+ dim(aRray)
+```
+#An array can have more than 2 dimension
+# It can be of 1 dim (vector), 2 dim (matrix), 3dim the data in ncdf - Climate 
+
+#Matrix in array 
+```{r}
+ (aRray <- array(1:24, dim = c(2,3,1)))
+```
+ 
+```{r}
+aRray[2,3,1]
+
+```
+# Accessing in Arrays
+```{r}
+aRray[1,1,1]
+```
+
+#
+```{r}
+aRray[,,1]
+```
+
+
+```{r}
+aRray[1,,1]
+```
+```{r}
+airquality
+```
+
+
+```{r}
+(aRray <- array(1:24, dim = c(3,4,2)))
+```
+
+```{r}
+aRray[3,,]
+```
+
+```{r}
+aRray[,,]
+```
+
+```{r}
+aRray[,2,]
+```
+
+```{r}
+x <- rnorm(1000,0,1)
+mylist <- list("matrix " = A, "sequence" =head(x), "bool" =TRUE, "Array"= aRray )
+mylist
+```
+
+```{r}
+mylist[[1]]
+mylist$`sequence`
+mylist[["Array"]]
+```
+
+```{r}
+mylist[["bool"]] = FALSE
+mylist$bool
+```
+
+```{r}
+mylist[["bool"]] = NULL #Delete the element from the list 
+mylist$bool 
+mylist
+```
+
+```{r}
+getwd()
+```
+```{r}
+setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+```{r}
+getwd()
+```
+
+```{r}
+setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+
+
+```{r}
+getwd()
+```
+
+```{r}
+setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+```{r}
+getwd()
+```
+
+```{r}
+dir.create( ".\ datafile/")
+```
+```{r}
+# to create a folder in Rstudio
+
+# to get list of all the documents in the directory
+dir("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+
+```{r}
+# To access csv files in the list
+file_names <- dir("./datafile/", pattern = ".csv")
+file_names 
+
+List <- list()
+
+List[[file_names[[1]]]]
+List["x_1.csv"] <- read.csv("./datafile/x_1.csv")
+head(List["x_1.csv"])
+
+
+# For LOOP
+List <- list()
+for (l in file_names){
+  List[l] <- read.csv(paste0("./datafile/",l))
+  
+}
+print(List)
+class(List)
+```
+
+
+#vector 
+```{r}
+
+data_l =list()
+for (x in file_names) {
+  fp <- paste0("./datafile/",x)
+  data_l[x] <- read.csv(fp)
+  
+}
+print(data_l)
+class(print(data_l))
+```
+
+#DATA FRAME 
+```{r}
+data_l =list()
+for (x in file_names) {
+  fp <- paste0("./datafile/",x)
+    data_l[[x]] <- read.csv(fp)
+  
+}
+print(data_l)
+class(data_l)
+```
+
+################################ Rstudio Day 5 ################################
+###############################################################################
+
+
+# FOR LOOP
+# i take the number in l
+```{r}
+l <- c(1,2,3,4,5,6,8,9,10)
+for(i in l){
+  print(i)
+}
+```
+
+
+```{r}
+dir(pattern =".csv")
+
+```
+
+```{r}
+fn <- dir("./datafile/")
+fn
+```
+
+```{r}
+
+fn <- dir("./datafile/")
+fn
+path <- "./datafile/"
+L <- list()
+
+for (u in fn) {
+  #print(urwana)
+  L[u] <- read.csv(paste0(path,u))
+ }
+L
+```
+```{r}
+ setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+
+
+```{r}
+
+fn <- dir("./datafile/")
+fn
+path <- "./datafile/"
+L <- list()
+
+for (u in fn) {
+  #print(urwana)
+  L[u] <- read.csv(paste0(path,u))
+ }
+L
+```
+
+```{r}
+string1 <- "my"
+string2 <- "name is Moreen"
+paste0(string2,string1)
+```
+
+```{r}
+fn <- dir("./datafile/")
+fn
+path <- "./datafile/"
+L <- list()
+
+for (u in fn) {
+  #print(urwana)
+  L[u] <- read.csv(paste0(path,u))
+ }
+L
+
+length(L)
+
+# Covert list into df 
+my_df <- data.frame(L)
+my_df
+
+# renaming column the file 
+
+newnames <- gsub(pattern = ".csv|_", replacement = "", x = colnames(my_df))
+#newnames <- gsub(pattern = "_", replacement = "", x = newnames)
+#newnames <- gsub(pattern = "[0-9]", replacement = " ", x = newnames)
+colnames(my_df) <- newnames
+head(my_df)
+
+X10 <- my_df$x10 
+my_df2 <- my_df[-2]
+my_df2$x10 <- X10
+my_df2$x11 <- cos(my_df2$x2)
+my_df2
+```
+
+```{r}
+plot(x11 ~ x2, data = my_df2, col= "green", pch = 8)
+```
+
+
+```{r}
+par(mfrow=c(1,2))
+hist(my_df2$x11)
+p <- "My new name"
+with(my_df2, hist(x11, xlab = p, main= paste("Histogram of", p)))
+
+
+for( i in 1:ncol(my_df2)){
+  my_varname <- colnames(my_df2)[i]
+  hist(my_df2[,i], main = paste("Histogran of " ,p ), xlab = p)
+}
+```
+
+
+```{r}
+is.list(my_df2)
+is.data.frame(L)
+```
+
+```{r}
+L2 <- as.list(my_df2)
+L2
+
+L3 <- list(my_df)
+L3
+```
+
+#Deal with missing values 
+```{r}
+x <- c(NA,1,2,NA,4,NA,NA)
+is.na(x)
+which(is.na(x)) # which of the elements of x are missing 
+which(x == 2)
+which(x >= 2)  # which of the element are greater than 2 
+which(!is.na(x)) # Which of the elements of x are not missing 
+
+
+mis_id <- which(is.na(x))
+x[mis_id]
+x[is.na(x)] <- 9
+x[is.na(x)] <- mean(x,na.rm = TRUE)
+print(x)
+x[is.na(x)] <- mean(x[which(!is.na(x))])
+print(x)
+y <- x[is.na(x)] <- mean(x,na.rm = TRUE)
+print(x)
+print(y)
+
+x[is.na(x)] <- mean(x[which(!is.na(x))])
+```
+```{r}
+x <- c(0:10, 50)
+xm <- mean(x)
+c(xm, mean(x, trim = 0.10))
+```
+
+```{r}
+x<- c(2,1,2,7,3,2.5,9,"2,7")
+class(x)
+#converting into numeric 
+z<-as.numeric(x)
+z
+x[is.na(z)]
+x[which(is.na(z))] <- 2.7
+x
+x <- as.numeric(x)
+x
+
+```
+
+#################################### 19/9/2024 #############################################
+```{r}
+head(dat <- datasets::attitude)
+# remove a column 
+class(dat)
+dim(dat)
+a <- dat[-1,]
+dim(a)
+```
+
+############################## While loop in Rstudio  ######################################
+
+```{r}
+while (condition) {
+  ## code to ne exceuted 
+  
+  
+  ## increment 
+  
+}
+```
+
+# While loop for even numbers 
+```{r}
+#Declare i 
+i <- 1 
+while (i <=10) {
+  ## code to ne exceuted 
+  print(i *2)
+  
+  ## increment 
+  i<- i +1
+}
+```
+
+# While loop for even numbers 
+```{r}
+#Declare i 
+i <- 1 
+while (i <=10) {
+  ## code to be executed 
+  print(i *2)
+  
+  ## increment 
+  i<- i +10
+}
+
+```
+
+
+```{r}
+
+if(conditions){
+  #The code goes here 
+}else {
+  # codes
+} 
+```
+
+
+#If else statements 
+```{r}
+if(conditions){
+  #The code goes here 
+}else if (conditions){
+  # codes
+} else if (conditions){
+  #Codes 
+  
+} else {
+  # codes 
+}
+
+```
+
+
+#Exercises 
+# Write a program that will tell the User "YOU WON" 
+
+```{r}
+#num <- as.integer(readline("Enter a number:"))
+num <- 0
+while (TRUE) {
+  sampe <- sample(6, size =1)
+  cat("You got",sampe,"\n")
+  print(sampe)
+  if (sampe == 6){
+    num <- num + 1
+    if (num == 3){
+      cat("You Won","\n ")
+      break 
+      }
+    } else {
+    cat("continue")
+  }
+}
+#print("You won!")
+```
+#TO get even number only 
+```{r}
+#print("Enter a number:")
+num <- 0
+while (num <= 2) {
+  sampe <- sample(6, size =1)
+  print(sampe)
+  if (sampe %% 2 == 0){
+    num <- num + 1
+  }
+
+}
+print("You won!")
+```
+
+```{r}
+#print("Enter a number:")
+num <- 0
+while (num <= 2) {
+  sampe <- sample(6, size =1)
+  print(sampe)
+  if (sampe == 1){
+    num <- num + 1
+  }
+
+}
+print("You won!")
+```
+
+
+# For the multiple of 3
+```{r}
+#print("Enter a number:")
+num <- 0
+while (num <= 3) {
+  sampe <- sample(6, size =1)
+  print(sampe)
+  if (sampe %% 3 == 0){
+    num <- num + 1
+  }
+
+}
+print("You won!")
+```
+
+# REPEAT
+
+# Natural Numbers 
+```{r}
+i <- 0
+repeat{
+  print(i)
+  i <- i + 1 
+  if (i >10) break
+}
+```
+```{r}
+i <- 0
+repeat{
+  print(i)
+  i <- i + 2 
+  if (i >10) break
+}
+```
+
+```{r}
+num <- 0
+repeat{
+  sampe <- sample(6,1)
+  print(sampe)
+  if ( sampe == 6) {
+    num <- num + 1  
+  }
+}
+```
+
+
+# apply function 
+```{r}
+A <- c(1:4)
+dim(A)<- c(2,2)
+A
+
+?apply
+apply(A, MARGIN = 2,sum)
+```
+
+```{r}
+iris
+```
+
+```{r}
+head(iris)
+apply(iris[-5], MARGIN = 2, mean)
+
+```
+```{r}
+head(iris)
+apply(iris[-5], MARGIN = 1, sd)
+
+```
+
+#can appy on dataset that are tabular 
+```{r}
+
+v <- c(1:100)
+
+avg <- function(x){
+  sum(x)/length(x)
+}
+
+avg(x = v)
+ 
+head(iris)
+apply(iris[-5], MARGIN = 2, avg)
+apply(iris[-5], MARGIN = 2, median)
+apply(iris[-5], MARGIN = 2, mean)
+apply(iris[-5], MARGIN = 2, sd)
+
+apply(iris[-5], MARGIN = 2, summary)
+
+```
+
+```{r}
+sapply(iris[-5],sum)
+sapply(iris, summary)
+sapply(v,function(x) x^2)
+sapply(v, sum)
+```
+
+
+# can lappy on dataset that are list dataframe vector and gives back a list only 
+```{r}
+a <-lapply(iris[-5], sum)
+write.csv(a,"a.csv") # 
+
+```
+
+```{r}
+is.factor(iris$Species)
+xx <- factor(iris$Species) # categorize 
+tapply(iris$Sepal.Length, iris[5], mean)
+```
+```{r}
+vapply(X=as.list(iris[-5]), quantile , FUN.VALUE = c("0"= 0,"25" =0 ,"50"= 0, "75"=0, "100" = 0)) # renames of the 
+```
+
+# Exercise 
+# Write a function that takes an "x" as argumebt abd detects that NA the replace then by mean
+```{r}
+replace_miss <- function(x){
+  # HOW TO DETECT
+  id_ms <- which(is.na(x))
+  x[id_ms] <- mean(x, na.rm = T)
+  return(x)
+}
+
+
+```
+
+can lappy on dataset that are list dataframe vector and gives back a list only 
+
+
+
+```{r}
+replace_miss <- function(x){
+  # HOW TO DETECT
+  id_ms <- which(is.na(x))
+  x[id_ms] <- mean(x, na.rm = T)
+  return(x)
+}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,456 @@
+---
+title: "Data Science in R"
+subtitle: "Lema LOGAMOU SEKNEWNA, PhD."
+output: html_document
+---
+
+# Operators 
+![](calc.webp)
+
+##
+
+* Addition: `+`
+```{r echo=TRUE}
+1+1
+```
+
+* Substraction: `-`
+```{r echo=TRUE}
+1-1
+```
+
+* Multiplication: `*`
+```{r echo=TRUE}
+1*1
+```
+
+##
+
+* Division: `/`
+```{r echo=TRUE}
+1/1
+```
+
+* Exponent: `^` or `**`
+```{r echo=TRUE}
+2 ^ 10 # or 2 ** 10
+```
+
+* Modulus (Remainder from division): `%%`
+```{r echo=TRUE}
+1035 %% 2
+```
+
+* Integer Division: `%/%`
+
+```{r echo=TRUE}
+1035 %/% 3
+```
+
+# Logical operators
+
+##
+
+* Less than: `<`
+```{r echo=TRUE}
+1 < 1
+```
+
+* Less than or equal to: `<=`
+```{r echo=TRUE}
+1 <= 1
+```
+
+* Greater than: `>`
+```{r echo=TRUE}
+1 > 1
+```
+
+##
+
+* Greater than or equal to: `>=`
+```{r echo=TRUE}
+1 >= 1
+```
+
+* Exactly equal to: `==`
+```{r echo=TRUE}
+"R" == "r"
+```
+
+<font color="red">R is case sensitive !!!</font>
+
+* Not equal to: `!=`
+```{r echo=TRUE}
+1 != 1
+```
+
+##
+
+* Negation/NOT: `!`
+```{r echo=TRUE}
+!TRUE # or !T
+```
+
+* AND: `&`
+```{r echo=TRUE}
+TRUE & TRUE; TRUE & FALSE; FALSE & FALSE
+```
+
+* OR: `|`
+```{r echo=TRUE}
+TRUE | TRUE; TRUE | FALSE; FALSE | FALSE
+```
+
+# R object and assignment
+
+##
+
+In R we can use `<-`, `=` (single equal sign !) and `->` to assign a value to a variable. 
+
+A variable name:
+
+* can begin with a character or dot(s). Ex: `a <- 1`, `0 -> .a` 
+* should not contain space. Replace empty space with `_`.
+```{r echo=TRUE, error=TRUE}
+v rsion <- 4.3.2
+```
+
+* can contain numbers. Ex: `a1 <- 1`.
+
+```{r echo=TRUE}
+a <- 1
+0 -> .a
+a1 = .a
+```
+
+
+# R variables
+
+##
+
+* Numeric - (10.5, 55, 787)
+```{r echo=TRUE}
+PI <- pi; class(PI); typeof(PI)
+n <- 55; class(n); typeof(n)
+```
+
+* Integer - (1L, 55L, 100L, where the letter "L" declares this as an integer).
+
+```{r echo=TRUE}
+# Check the class of n <- 55L. What do you see?
+```
+
+* Complex - (9 + 3i, where "i" is the imaginary part)
+```{r echo=TRUE}
+z <- 9 + 3i; class(z); #typeof(z)
+```
+
+##
+
+* Character/string - ("R", "[R]eading week", "FALSE", "11.5")
+```{r echo=TRUE}
+string <- "[R]eading week"; class(string)
+```
+
+* Logical/Boolean - (TRUE or FALSE)
+```{r echo=TRUE}
+TRUE # or T
+FALSE # or F
+```
+
+Can also be an outcome of a test. Example: if we want to check if  `"[R]eading week" == "[R]eading Week"`
+
+
+# R Data types/Structure
+
+##
+
+* Scalars: any number in N, Z, D, Q, R, or C (Quantum Mecanics)
+* Vectors: collection of identical objects; can be a sequence;
+```{r echo=TRUE}
+v <- c(1, "R", T, FALSE, NA)
+# print v
+
+# what is the class of v?
+
+# sequence
+(x <- seq(0, 2*pi, length.out = 50))
+```
+
+##
+
+* Matrices: two dimensional data set with columns and rows.
+```{r echo=TRUE}
+(A <- matrix(1:25, nrow = 5, ncol = 5))
+(B <- matrix(1:25, nrow = 5, ncol = 5, byrow = T))
+```
+
+## Matrix operations
+
+```{r echo=TRUE}
+A <- matrix(c(1, 0, 2, 5, 2, 1, 4, 2, 0), nrow = 3)
+B <- matrix(c(2, 5, 2, 3, 1, 1, 0, 1, 1), nrow = 3)
+
+# Transpose
+(A_T <- t(A))
+# Addition
+A + B
+# Substraction
+A - B
+```
+
+##
+
+```{r echo=TRUE}
+# Multiplication
+A %*% B
+# Inverse
+(A_inv <- solve(A))
+# Division: multiply a matrix by the inverse of another. B/A = BA_inv
+B %*% A_inv
+```
+
+
+## Eigen values/vectors
+```{r echo=TRUE}
+ev <- eigen(A)
+ev$values
+ev$vectors
+```
+
+
+##
+
+* Arrays: can have more than two dimensions.
+```{r echo=TRUE}
+(aRray <- array(1:24, dim = c(3, 4, 2)))
+class(aRray)
+```
+
+##
+
+```{r echo=TRUE}
+dim(aRray)
+# 
+aRray[1, 1, 2] # element at i=1, j=1 from the second matrix
+```
+
+The dimension: row position, column position, matrix level
+
+##
+
+* Lists: collection of object of different types. The sizes of elements could be different.
+```{r echo=TRUE}
+list("matrix" = A, "sequence" = x)
+```
+
+##
+
+* Data.frame: is also a list where all elements (columns) have the same length. A data frame in R is a table.
+
+```{r echo=TRUE}
+iris
+```
+
+##
+
+We can convert a data frame into a list.
+
+```{r echo=TRUE}
+as.list(iris)
+```
+
+
+# Import data in R
+
+The `iris` dataset exist already in the R environment. We can import data in R from different sources:
+
+* from a package without loading it using the `library` function.
+```{r echo=TRUE}
+data("spam", package = "kernlab")
+# data structure
+str(spam)
+```
+
+##
+
+* Comma Separated Value file
+
+Exercise: import all the csv files in a list using a for loop. 
+```{r echo=TRUE}
+data_list <- list()
+# import 
+# TODO
+```
+
+
+# Controls with: `if` / `else`
+
+```
+if (condition/Boolean expression){
+  ## code to be executed
+}
+```
+
+## Example
+```{r echo=TRUE}
+x <- 3
+if (x < 4){
+  print(TRUE)
+} else {
+  print(FALSE)
+}
+
+# one line
+ifelse(x < 4, T, F)
+```
+
+## 
+We can embed `if` to `if` and `else`.
+```{r echo=TRUE}
+if (x < 4){
+  if (x != 0){
+    print("x is not equal to zero.")
+  } else {
+    print("x is equal to zero")
+  }
+  
+  print("x is less than 4")
+} else {
+  if (x > 1){
+    print("x is greater than 1.")
+  } else {
+    print("x is less than or equal to 1")
+  }
+  print("x is greater than 4.")
+}
+```
+
+
+# Loops 
+
+## for 
+
+```
+for (i in vector){
+  ## code to be executed
+}
+```
+
+```{r echo=TRUE}
+m <- 6
+for (i in 1:m) print(i)
+```
+
+
+```{r echo=TRUE}
+for (i in 1:m) {
+  print(i)
+}
+```
+
+## Exercise:
+Write a for loop that checks each of the first 10 positive integers if it is odd of even.
+```{r echo=TRUE}
+## TODO
+```
+
+
+## while
+
+```
+for (i in vector){
+  ## code to be executed
+}
+```
+
+
+```{r echo=TRUE}
+i <- 0 # should initialize an object that will be incremented in the loop
+while (TRUE) { # infinite loop if there is no stooping condition 
+  print(i)
+  if (i >= 10) break
+  i <- i+1
+}
+```
+
+
+## repeat
+
+```{r echo=TRUE}
+i <- 0
+repeat{
+  print(i)
+  i <- i + 1
+  if (i > 10) break # repeat until condition holds.
+}
+```
+
+# Apply Functions Over Array Margins
+
+##
+
+* `apply`: return a vector or array or list of values obtained by applying a function to margins of an array or matrix.
+
+```{r echo=TRUE}
+apply(iris[-5], MARGIN = 2, mean) # MARGIN = 2 means column-wise
+```
+
+* `sapply`: use `?sapply` to check the documentation.
+```{r echo=TRUE}
+sapply(iris[-5], mean)
+```
+
+##
+
+`sapply` can also return a list.
+```{r echo=TRUE}
+sapply(iris, summary)
+```
+##
+
+* `lapply`: returns a list of the same length as X, each element of which is the result of applying FUN to the corresponding element of X
+```{r echo=TRUE}
+lapply(iris[-5], mean) # MARGIN = 2 means column-wise
+```
+
+## tapply: check the documentation
+
+```{r echo=TRUE}
+xx <- factor(iris$Species)
+tapply(iris$Sepal.Length, iris[[5]], mean)
+```
+
+
+## vapply: check the documentation
+
+```{r echo=TRUE}
+vapply(X = as.list(iris[-5]), quantile, 
+       c("0%" = 0, "25%" = 0, "50%" = 0, "75%" = 0, "100%" = 0))
+```
+
+
+# Define functions in R
+
+```
+function_name <- function(arg1, arg2, ...){
+  # code to be executed
+}
+```
+
+```{r echo=TRUE}
+pp <- function(x) return(x+1)
+
+i <- 1
+(i <- pp(i))
+```
+
+## Exercise: 
+
+Draw the flowchart of the quadratic equation $ax^2+bx+c=0$ and write an R function that give solutions and comment according to the values of the discriminant.
+
+```{r}
+# TODO
+```
+

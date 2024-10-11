@@ -1,0 +1,111 @@
+---
+title: "Data manipulation"
+author: "Moreen Mbuki"
+date: "2024-09-20"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+setwd("C:/Users/Administrator/Desktop/AIMS/AIMS SKILL PHASE/IntroCL/Rstudio")
+```
+
+
+# Draw the flowchart of the quadratic $ax^2+bx+c=0$ and write 
+```{r}
+# Prompting the user 
+a <- as.numeric(readline("Enter the value of a: "))
+b <- as.numeric(readline("Enter the value of b: "))
+c <- as.numeric(readline("Enter the value of c: "))
+
+# Quadratic Function
+quadratic <- function(a,b,c){
+   d <- (b^2 - 4*a*c)
+   #2print(paste (d)
+   if( d == 0){
+    x <- (-b/(2*a))
+    print(x)
+   } else if ( d != 0 ){
+     
+     x1 <- (( -b - 1i*sqrt(-d)))/(2*a)
+     x2 <- (( -b + 1i*sqrt(-d)))/(2*a)
+     print(x1)
+     print(x2)
+   } else if ( d > 0) {
+     x1 <- (( b - sqrt(d)))/(2*a)
+     x2 <- (( b + sqrt(d)))/(2*a)
+     print(x1)
+     print(x2)
+   } else {
+     print("invalid")
+   }
+  
+}
+quadratic(a,b,c)
+
+``` 
+
+
+```{r}
+library(tictoc)
+solve_duaq <- function(a=NULL, b=NULL, c=NULL){
+  if(is.null(a)) a <-as.numeric(readline("Enter a: "))
+  if(is.null(b)) b <-as.numeric(readline("Enter b: ")) 
+  if(is.null(c)) c <-as.numeric(readline("Enter a: "))
+  
+  if ( a==0){ 
+    cat("This is not a quadratic equation: \n") } 
+  
+  #Discriminant 
+  d <- (b^2 - 4 *a*c)
+  
+  if ( d == 0 ) {
+    cat("We have one repeated root ")
+    roots <-(-b/(2*a))
+  } else if ( d < 0 ){
+    cat("We have two complex roots: \n")
+    x1 <- (-b - 1i*sqrt(-d))/(2*a)
+    x2 <- (-b + 1i*sqrt(-d))/(2*a)
+    roots <- c(x1,x2)
+  } else {
+    cat("We have two real roots: \n")
+    x1 <- (-b - sqrt(-d))/(2*a)
+    x2 <- (-b + sqrt(-d))/(2*a)
+    roots <- c(x1,x2)
+  }
+  
+   return(roots)
+}
+solve_duaq(1,-4,13)
+tic()
+#solve_duaq()
+```
+
+
+```{r}
+library(stringr)
+mytext <- "The Gender-based violence (GBV) is any act that results in, or is likely to result in, physical, sexual, or psychological harm or suffering, with inclusion of threats to such acts, coercion, or arbitrary deprivation of liberty, whether occurring in public or private life (UNFPA 2020)."
+
+# %>% or . this is pipe function
+
+
+mytext_split <- strsplit(mytext, split = " ")
+#mytext_split <- gsub()
+mytext_split <- str_extract_all(string = mytext_split, pattern = "[aA-zZ]+") %>% tolower()
+#length(mytext_split)
+```
+```{r}
+library(ggplot2)
+iris %>% ggplot(aes(x = Petal.Length, y = Sepal.Length ))
+```
+
+
+```{r}
+library(ggplot2)
+iris %>% ggplot(aes(y = Petal.Length, col = Species )) + geom_boxplot()
+```
+
+
