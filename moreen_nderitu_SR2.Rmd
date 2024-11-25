@@ -1,0 +1,525 @@
+---
+title: "Statistical Regression Assignment"
+author: "Moreen Mbuki"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### INTRODUCTION 
+
+Lending businesses play a crucial role in fostering economic development. For example, credit products empower individuals and small businesses by providing access to capital, enabling investments in growth opportunities, the establishment of businesses, and the expansion of operations. 
+Moreover, access to credit can help low-income individuals meet essential expenses,such as healthcare, education, and housing, thereby contributing to poverty reduction and improving living standards.
+However, managing a lending business involves navigating significant risks,
+including the possibility that borrowers may default on their loans. Accurately predicting and managing these risks is critical to the sustainability and success of lending operations. The report below provide some insights in the on the risks affecting these lending businesses and the best model to predict these risks.
+
+
+#### Exploratory data analysis 
+
+To support the analysis, we have been provided with the dataset, which includes the following variables:
+− Age: Age of the main applicant
+− Gender: Gender of the main applicant
+− Experience: Number of years of professional experience
+− Earnings: Monthly earnings (in CFA)
+− Residence: Location of the main residence
+− HomeOwner: Is the applicant a home owner?
+− LandOwner: Does the applicant own a land?
+− BadRecords: Number of previously unmet financial commitments
+− CarOwner: Does the applicant own a car?
+− Defaults: Number of accounts unable to repay the loan.
+− Accounts: Total number of accounts
+− ObsRate: Observed default rate (i.e. number of accounts that are unable to
+repay the loan divided by total number of accounts)
+
+Setting the working directory 
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+ setwd("C:/Users/Administrator/Desktop/AIMS/Review Phase/Statisticical Regression/GLM Assignment")
+```
+
+
+Loading the require packages 
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+library(Cairo)
+library(ggplot2)
+library(readr)
+library(stats4)
+library(psych)
+library(gridExtra)
+library(vcd)
+library(ggalluvial)
+library(ggplot2)
+library(car)
+
+
+```
+
+Loading the data set
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+lending <- read.csv("lending_dataset1_aggr.csv")
+head(lending)
+```
+
+To start with we can divide our data set into two partitions: numerical dataset and categorical datasets.In the case of numerical dataset we can check on the distribution of the risks while as for the categorical dataset we compare using bar plots and pie charts.
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+str(lending)
+```
+
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+numericdata <- lending[,c("Age","Experience","Earnings","Defaults",
+                          "Accounts","BadPastRecords")]
+head(numericdata)
+```
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+describe(numericdata)
+```
+
+```{r, Boxplots, echo=FALSE,cache.comments=TRUE,comment = NA,fig.height= 3 , fig.width=8, out.width='100%', fig.cap="BoxPlot for Age,Earning  and No of Accounts"}
+#pdf("box-plot.pdf",width = 12, height = 5)
+par(mfrow = c(1,3))
+boxplot(numericdata$Age,
+        main = "Boxplot of Age of the main applicant",
+        xlab = "Age in Years",
+        ylab = "Frequency ",
+        col = "pink",  
+        border = "black")
+
+hist(numericdata$Earnings,
+     probability = TRUE,breaks = 30,
+     main = "Histogram for Earnings ",
+     col="yellow")
+lines(density(numericdata$Earnings), 
+      col = "grey", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(numericdata$Earnings), 
+       col = "brown", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("green", "purple"),
+       legend = c("Density", "Average"))
+
+qqnorm(numericdata$Accounts)
+qqline(numericdata$Accounts)
+
+#dev.off()
+```
+The box plots above illustrate the distribution of Age, Earning, and Total Number of Accounts. The average age of the main applicant is 40 years, with a standard deviation of 4.76 years. The age spans from 29 years to 57 years. 
+
+```{r, Paired Plot, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE,fig.height= 5, fig.width=8, out.width='100%', fig.cap="Paired Plot for Numerical Variables"}
+#install.packages("GGally")
+library(GGally)
+ggpairs(numericdata)
+
+```
+
+The pair plot above provides various insights into the numerical variables. The kernel density estimates show that Age, Experience, and Earning are approximately normally distributed, with minimal deviations in skewness (0.12, -0.10, 0.18) and kurtosis (-0.19, -0.26, -0.01), respectively. However, Default and Bad Records exhibit positive skewness.After checking on the correlation between the variables there is no a strong correlation (
+𝑟=0.85 indicating less potential multicollinearity between the variables.
+
+
+Caterogical Variables
+```{r,echo=FALSE,cache.comments=TRUE,comment =NA,warning=FALSE,include=FALSE}
+catdata <- lending[,c("Gender","Residence","HomeOwner","LandOwner",
+                      "CarOwner")]
+head(catdata)
+```
+
+```{r,Categorical plot, echo=FALSE, fig.height=4, fig.width=8, out.width='100%', fig.cap="Categorical plot"}
+#pdf("plots.pdf", width = 12, height = 5)
+par(mfrow =c(1,3))
+contingency <- table(catdata$Gender, catdata$Residence, catdata$HomeOwner,catdata$LandOwner, catdata$CarOwner)
+mosaicplot(contingency, main = "Mosaic Plot", color = TRUE)
+cont <- table(catdata$Gender, catdata$Residence)
+#round((prop.table(contingency)*100),2)
+
+
+barplot(cont, beside = TRUE, col = c("blue", "orange"), 
+        legend = TRUE,
+        main = "Barplot for Gender and Residence", 
+        xlab = "City_Category", 
+        ylab = "Frequency")
+
+conttable <- table(catdata$HomeOwner, catdata$Gender)
+#round((prop.table(cont_table)*100),2)
+
+barplot(conttable, beside = TRUE, col = c("pink", "red"),
+        legend = TRUE,
+        main = "Barplot for Gender and HomeOwner ", 
+        xlab = "Gender",
+        ylab = "Frequency")
+
+
+#dev.off()
+```
+
+
+
+
+```{r,Mosaic-plot, echo=FALSE,warning=FALSE,fig.height=4 , fig.width=8, out.width='100%', fig.cap="Mosaic Plot"}
+
+mosaic(~ Gender + Residence + HomeOwner,
+       data = catdata,
+       main = "Mosaic Plot",
+       labeling = labeling_values,  # Adds category names
+       shade = TRUE,                # Adds shading for visual distinction
+       legend = TRUE)               # Displays a legend
+
+
+
+```
+
+
+The mosaic plot illustrates the distribution of categorical variables in the dataset. Male applicants residing in the city and not owning homes dominate with a total of 78, compared to female city residents who are homeowners, totaling 63. Similarly, male applicants in rural areas who are not homeowners outnumber their female counterparts. This suggests that male applicants are more prevalent than female applicants in the dataset. 
+
+
+
+```{r,Parallel Sets plots, echo=FALSE,warning=FALSE, fig.height= 4, fig.width= 10, out.width='100%', fig.cap="Parallel Sets plots for Categorical Variables"}
+
+ggplot(catdata, aes(axis1 = Gender, axis2 = Residence,
+                    axis3 = HomeOwner, axis4 = LandOwner, axis5 = CarOwner)) +
+  geom_alluvium(aes(fill = Gender)) +
+  geom_stratum() +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  labs(title = "Parallel Sets Plot", y = "Count") +
+  scale_x_discrete(name = "Categories", 
+                   limits = c("Gender", "Residence", "HomeOwner", "LandOwner", "CarOwner"))
+
+```
+
+The Parallel Sets plot show the relationship between the categorical variable in the dataset. Gender is  equally distributed with a slight difference, Most applicants live in the city, with fewer in the rural area. Male are slightly dominate in both city and rural area. Majority of the applicants are not HomeOwners , especially City residents. Applicants who own homes are most likely to own a land and vice versa, Finally, owning a car is strongly associated toe owning both home and land.
+
+
+### MODEL Analysis 
+ From the data set we aim to model the data given to check the factor that  
+ that affect Risk of Default in a Microfinance Company:
+ Response Variable will be ObsRate: Observed default rate
+ Explanatory variabel will be : 
+ − Age: Age of the main applicant
+− Gender: Gender of the main applicant
+− Experience: Number of years of professional experience
+− Earnings: Monthly earnings (in CFA)
+− Residence: Location of the main residence
+− HomeOwner: Is the applicant a home owner?
+− LandOwner: Does the applicant own a land?
+− BadRecords: Number of previously unmet financial commitments
+− CarOwner: Does the applicant own a car?
+
+Before we proceed with the model selection let relationship between ObsRate: Observed default rate and gender 
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+y_female50 <- lending$ObsRate[lending$Gender=="Female" & lending$Age <=50]
+x_female50 <- lending$Earnings[lending$Gender=="Female" & lending$Age <=50]
+```
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+plot(y_female50 ~ x_female50)
+
+```
+glm(cbind(Deaths,Exposure - Deaths) ~ Age + Year, data = mortality, family = binomial)
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+colnames(lending)
+
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(lending$ObsRate)
+```
+
+
+GLM 
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+model1 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender, data = lending , family = binomial())
+model1
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model1)
+```
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+
+model2 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience, data = lending , family = binomial())
+model2
+
+```
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model2)
+
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE, warning=FALSE}
+
+model3 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings, data = lending , family = binomial())
+model3
+
+```
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model3)
+
+```
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+colnames(lending)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+model4 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence, data = lending , family = binomial())
+model4
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model4)
+
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+
+model5 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence + HomeOwner, data = lending , family = binomial())
+model5
+
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model5)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+model6 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence + HomeOwner + LandOwner, data = lending , family = binomial())
+model6
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model6)
+
+```
+
+```{r}
+model7 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence + HomeOwner + LandOwner + BadPastRecords, data = lending , family = binomial())
+model7
+```
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model7)
+```
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+
+model8 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence + HomeOwner + LandOwner + BadPastRecords + CarOwner, data = lending , family = binomial())
+model8
+
+```
+
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model8)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+model9 <- glm(cbind(Defaults, Accounts - Defaults ) ~ Age + Gender + Experience + Earnings + Residence + HomeOwner + LandOwner + BadPastRecords + CarOwner + Accounts, data = lending , family = binomial())
+model9
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+summary(model9)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+finalmodel <- glm(cbind(Defaults, Accounts - Defaults ) ~  Experience + Earnings + HomeOwner+ BadPastRecords , data = lending , family = binomial())
+
+finalmodel
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=TRUE}
+summary(finalmodel)
+```
+### Model Building 
+
+Forward and backward selection techniques were applied to identify the most suitable model for predicting the risk of default in microfinance businesses, using factors such as the applicant's age, gender, residence, earnings, experience, homeownership, land ownership, bad past records, and account information. A hierarchical approach was used, where variables were added one at a time, and the model's performance was evaluated based on AIC and deviance. After incorporating all variables, some were found to be insignificant in predicting default risk and were subsequently removed. This process resulted in a final model that retained only significant variables and achieved a lower AIC, indicating better model performance.
+
+
+#### Model Interpretation 
+
+The logistic regression model predicts the likelihood of defaults based on **Experience, Earnings, HomeOwner**, and **BadPastRecords**. Significant predictors include **Experience** (\(p < 0.001\)) and **Earnings** (\(p < 0.001\)), both of which reduce the probability of defaults. Specifically, each additional year of experience decreases the log-odds of default by 0.0336, while higher earnings have a smaller but significant protective effect. Conversely, a history of **BadPastRecords** significantly increases the likelihood of default (\(p < 0.001\)), making it the strongest risk factor in the model. Homeownership slightly reduces the default risk (\(p = 0.0434\)), but its effect is relatively weak.
+
+Overall, the model fits the data well, as indicated by the reduction in deviance (from 1346.9 to 136.6) and an AIC of 1477.6. Practical implications suggest focusing on applicants’ earnings and professional experience to assess creditworthiness, while closely monitoring those with poor credit histories, as they pose the highest risk.
+
+
+### Model Diagnosis
+```{r,Model Diagnosis plots, echo=FALSE,warning=FALSE, fig.height= 4, fig.width= 10, out.width='100%', fig.cap="Model Diagnosis plots"}
+
+par(mfrow =c(1,3))
+# Residual Plot
+plot(residuals(finalmodel, type = "deviance"), main = "Deviance Residuals")
+
+# Cook's Distance
+plot(cooks.distance(finalmodel), main = "Cook's Distance")
+
+# QQ Plot
+qqnorm(residuals(finalmodel, type = "deviance"))
+qqline(residuals(finalmodel, type = "deviance"))
+
+```
+
+
+```{r, include=FALSE, echo=FALSE}
+# VIF for Multicollinearity
+
+vif(finalmodel)
+
+```
+
+#
+After model diagnosis we can see the final model meet the following assumptions
+Linear Association  and Homoskedasticity - a plot for residual shows that all the the random variation without any assytematic pattern in either location or scale.
+Outliers - Cook's distance demonstrates a bit of outlier though not many this can be solve by data transformation.
+QQ plot - Since not all the data points are along the straight we can concludes the normality need to be rectified by data transformation methods
+example by taking log the variables.
+Multicollinearity - from the obtained Variance Inflation Factor (VIF): the values for  Experience,Earnings, HomeOwner, BadPastRecords are [1.689376, 1.694903, 1.004525,1.000359] respectively the values above are not between 5–10 this indicate no multicollinearity among the variables.
+
+
+
+#### Saving the pdf 
+
+```{r, Boxplots, echo=FALSE,cache.comments=TRUE,comment = NA,fig.height= 3 , fig.width=8, out.width='100%', fig.cap="BoxPlot for Age,Earning  and No of Accounts"}
+pdf("box-plot.pdf",width = 12, height = 5)
+par(mfrow = c(1,3))
+boxplot(numericdata$Age,
+        main = "Boxplot of Age of the main applicant",
+        xlab = "Age in Years",
+        ylab = "Frequency ",
+        col = "pink",  
+        border = "black")
+
+hist(numericdata$Earnings,
+     probability = TRUE,breaks = 30,
+     main = "Histogram for Earnings ",
+     col="yellow")
+lines(density(numericdata$Earnings), 
+      col = "grey", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(numericdata$Earnings), 
+       col = "brown", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("green", "purple"),
+       legend = c("Density", "Average"))
+
+qqnorm(numericdata$Accounts)
+qqline(numericdata$Accounts)
+
+dev.off()
+```
+
+```{r, Paired Plot, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE,fig.height= 5, fig.width=8, out.width='100%', fig.cap="Paired Plot for Numerical Variables"}
+#install.packages("GGally")
+library(GGally)
+pdf("paired-plot.pdf",width = 12, height = 5)
+ggpairs(numericdata)
+dev.off()
+```
+
+```{r,Categorical plot, echo=FALSE, fig.height=4, fig.width=8, out.width='100%', fig.cap="Categorical plot"}
+pdf("cate_plots.pdf", width = 12, height = 5)
+par(mfrow =c(1,3))
+contingency <- table(catdata$Gender, catdata$Residence, catdata$HomeOwner,catdata$LandOwner, catdata$CarOwner)
+mosaicplot(contingency, main = "Mosaic Plot", color = TRUE)
+cont <- table(catdata$Gender, catdata$Residence)
+#round((prop.table(contingency)*100),2)
+
+
+barplot(cont, beside = TRUE, col = c("blue", "orange"), 
+        legend = TRUE,
+        main = "Barplot for Gender and Residence", 
+        xlab = "City_Category", 
+        ylab = "Frequency")
+
+conttable <- table(catdata$HomeOwner, catdata$Gender)
+#round((prop.table(cont_table)*100),2)
+
+barplot(conttable, beside = TRUE, col = c("pink", "red"),
+        legend = TRUE,
+        main = "Barplot for Gender and HomeOwner ", 
+        xlab = "Gender",
+        ylab = "Frequency")
+
+
+dev.off()
+```
+
+```{r,Parallel Sets plots, echo=FALSE,warning=FALSE, fig.height= 4, fig.width= 10, out.width='100%', fig.cap="Parallel Sets plots for Categorical Variables"}
+pdf("parallet_plot.pdf",, width = 12, height = 5 )
+ggplot(catdata, aes(axis1 = Gender, axis2 = Residence,
+                    axis3 = HomeOwner, axis4 = LandOwner, axis5 = CarOwner)) +
+  geom_alluvium(aes(fill = Gender)) +
+  geom_stratum() +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  labs(title = "Parallel Sets Plot", y = "Count") +
+  scale_x_discrete(name = "Categories", 
+                   limits = c("Gender", "Residence", "HomeOwner", "LandOwner", "CarOwner"))
+dev.off()
+```
+```{r,Model Diagnosis plots, echo=FALSE,warning=FALSE, fig.height= 4, fig.width= 10, out.width='100%', fig.cap="Model Diagnosis plots"}
+
+pdf("model_diog.pdf", width = 12, height = 5)
+par(mfrow =c(1,3))
+# Residual Plot
+plot(residuals(finalmodel, type = "deviance"), main = "Deviance Residuals")
+
+# Cook's Distance
+plot(cooks.distance(finalmodel), main = "Cook's Distance")
+
+# QQ Plot
+qqnorm(residuals(finalmodel, type = "deviance"))
+qqline(residuals(finalmodel, type = "deviance"))
+
+dev.off()
+```
+
+
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=TRUE}
+# Poisson Model 
+
+finalmod <- glm( Defaults  ~ Experience + Earnings + BadPastRecords +  Accounts, data = lending , family = poisson(link = "log"))
+finalmod
+```
+
+
+```{r,echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=TRUE}
+summary(finalmod)
+```
+
+```{r,Poisson Model Diagnosis plots, echo=FALSE,warning=FALSE, fig.height= 4, fig.width= 10, out.width='100%', fig.cap="Model Diagnosis plots"}
+
+pdf("poismodel_diog.pdf", width = 12, height = 5)
+par(mfrow =c(1,3))
+# Residual Plot
+plot(residuals(finalmod, type = "deviance"), main = "Deviance Residuals")
+
+# Cook's Distance
+plot(cooks.distance(finalmod), main = "Cook's Distance")
+
+# QQ Plot
+qqnorm(residuals(finalmod, type = "deviance"))
+qqline(residuals(finalmod, type = "deviance"))
+
+dev.off()
+```
+
+
+
+
+
+

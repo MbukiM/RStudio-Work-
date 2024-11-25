@@ -1,0 +1,142 @@
+---
+title: "GLM Analysis"
+author: "Moreen Mbuki"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Setting the working directory 
+```{r}
+ setwd("C:/Users/Administrator/Desktop/AIMS/Review Phase/Statisticical Regression/GLM Assignment")
+```
+
+
+Loading the require packages 
+```{r}
+library(readr)
+library(psych)
+library(ggplot2)
+
+```
+
+Loading the data set
+
+```{r}
+mortality <- read.csv("data_mortality.csv")
+mortality
+```
+
+```{r}
+mortality$logRate <- log(mortality$Deaths/mortality$Exposure)
+head(mortality)
+                         
+```
+
+Compare death rates of males and females aged 50 using
+graphic. Comments
+
+```{r}
+y_female50 <- mortality$logRate[mortality$Gender=="F" & mortality$Age ==50]
+x_female50 <- mortality$Year[mortality$Gender=="F" & mortality$Age ==50]
+
+```
+
+```{r}
+plot(y_female50 ~ x_female50)
+```
+
+Compare death rates of males and females for 1986 versus
+2000 using graphic. Comments.
+```{r}
+y_male50 <- mortality$logRate[mortality$Gender=="M" & mortality$Age ==50]
+x_male50 <- mortality$Year[mortality$Gender=="M" & mortality$Age ==50]
+
+```
+
+Plot 
+```{r}
+plot(y_male50 ~ x_male50)
+```
+
+```{r}
+plot(y_female50 ~ x_female50,ylim = c(min(y_female50, y_male50), max(y_female50,y_male50)), xlab= "Calendar Year", ylab= "Log Rate")
+points(y_male50~ x_male50, col="red")
+```
+
+
+Compare death rates of males and females for 1986 versus
+2000 using graphic. Comments.
+```{r}
+y_female1986 <- mortality$logRate[mortality$Gender=="F" & mortality$Year ==1986]
+x_female1986 <- mortality$Age[mortality$Gender=="F" & mortality$Year ==1986]
+```
+
+```{r}
+plot(y_female1986~x_female1986)
+```
+
+2000
+```{r}
+y_female2000 <- mortality$logRate[mortality$Gender=="F" & mortality$Year ==2000]
+x_female2000 <- mortality$Age[mortality$Gender=="F" & mortality$Year ==2000]
+```
+
+
+```{r}
+plot(y_female2000~x_female2000)
+```
+
+
+Plot
+```{r}
+plot(y_female2000~x_female2000, ylim=c(min(y_female1986,y_male1986,y_female2000, y_male2000),max(y_female1986,y_male1986,y_female2000,y_male2000)),
+     xlab = "Age",ylab = "Year")
+points(y_female1986~x_female1986, col="pink", pch = 1)
+points(y_male1986~x_male1986, col="purple", pch = 2 )
+points(y_male2000~x_male2000, col="green", pch = 3)
+```
+```{r}
+y_male1986 <- mortality$logRate[mortality$Gender=="M" & mortality$Year ==1986]
+x_male1986 <- mortality$Age[mortality$Gender=="M" & mortality$Year ==1986]
+```
+
+```{r}
+plot(y_male1986 ~ x_male1986)
+```
+
+
+
+```{r}
+y_male2000 <- mortality$logRate[mortality$Gender=="M" & mortality$Year ==2000]
+x_male2000 <- mortality$Age[mortality$Gender=="M" & mortality$Year ==2000]
+```
+
+
+```{r}
+colnames(mortality)
+```
+
+GLM
+```{r}
+model <- glm(cbind(Deaths,Exposure - Deaths) ~ Age + Year, data = mortality, family = binomial)
+model
+```
+```{r}
+model <- glm(cbind(Deaths,Exposure - Deaths) ~ Age + Year, data = mortality, family = binomial)
+model
+```
+
+
+
+```{r}
+summary(model)
+```
+```{r}
+anova(model)
+```
+
