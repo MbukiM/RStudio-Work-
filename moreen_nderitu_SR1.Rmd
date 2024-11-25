@@ -1,0 +1,300 @@
+---
+title: "Statistical Regression Assignment 1"
+author: "Moreen Mbuki"
+date: "2024-11-12"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A retail company wants to understand the customer purchase behaviour
+(specifically, purchase amount).First, we need to load the data set
+data_purchase_behaviors which will be used to to understand the customer
+purchase behaviour (specifically,purchase amount). The data-set contains
+the following columns: User ID, Gender, City Category, Stay In Current
+City Years (this is the length of stay in the current city), Marital
+Status (coded as 1 for married, 0 otherwise), Age num (this is the
+approximate age of the user), and Purchase (this is the purchase
+amount).
+
+This data-set contain 159000 observation with 7 variables which are both
+numerical data-set: Age_num of the customers, purchase amount, Atay in
+the current city in years and categorical data-set which are as follows
+: Marital status, Gender and City categories.For the case id descriptive
+analysis the data-set is partition into the two types.
+
+```{r, echo=FALSE,cache.comments=TRUE,comment= NA,include=FALSE}
+# installing the required packages 
+# install.packages("ggplot2")
+# install.packages("Cairo")
+# install.packages("readr")
+# install.packages("psych")
+
+
+# loading the necessary packages
+library(Cairo)
+library(ggplot2)
+library(readr)
+library(stats4)
+library(psych)
+
+```
+
+```{r, include=FALSE, echo=FALSE,cache.comments=TRUE}
+library(readr)
+library(stats4)
+setwd("C:/Users/Administrator/Desktop/AIMS/Review Phase/Statisticical Regression/0 - Getting Started with R")
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,include=FALSE}
+data <- read.csv("data_purchase_behaviour.csv")
+head(data,3)
+
+```
+
+```{r,include=FALSE,echo=FALSE,cache.comments=TRUE,comment = NA}
+str(data)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,include=FALSE,comment = NA}
+colnames(data)
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,include=FALSE,comment = NA}
+summary(data)
+```
+
+To start with is numerical variables, after sub-setting we can start by
+have a look at the data set.
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,include=FALSE}
+num_data <-data[,c("Stay_In_Current_City_Years","Age_num", "Purchase")]
+head(num_data,3)
+```
+
+From the descriptive statistics of the data set,the maximum purchase
+amount is 23,961 with the minimum of 12, for the age of the customers
+the maximum age is 75 years while the minimum age is 10 years. The
+customers the maximum stay in the current city being 4.
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,warning=FALSE, include=FALSE}
+library(psych)
+describe(num_data)
+```
+
+Similarly we can use box-plots to clearly see the distribution of the
+data-set. The figure below show the subplot for the stay in the current
+city in years , Age and the purchase respectively.
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,fig.height= 3 , fig.width=8, out.width='100%', fig.cap="BoxPlot for Age,Puchase and Current City"}
+#pdf("box-plot.pdf",width = 12, height = 5)
+par(mfrow = c(1,3))
+boxplot(num_data$Stay_In_Current_City_Years,
+        main = "Boxplot Current_City_Years",
+        xlab = "Stay_In_Current_City_Years",
+        ylab = "Stay_In_Current_City_Years ",
+        col = "pink",  
+        border = "black")
+boxplot(num_data$Age_num,
+        main = "Boxplot of Age_num",
+        xlab = "Age_num",
+        ylab = "Age ",
+        col = "blue",  
+        border = "black")
+
+boxplot(num_data$Purchase,
+        main = "Boxplot of Purchases",
+        xlab = "Purchase",
+        ylab = "Amount Spent",
+        col = "lightblue",  
+        border = "darkblue") 
+
+#dev.off()
+```
+
+Using histogram we can clearly see whether the variable are normally
+distributed. From the figure below we have 3 histograms for the
+variable\
+Histogram to see the distribution of the data-set
+
+```{r,  echo=FALSE,cache.comments=TRUE,fig.height= 3,fig.width=8,out.width='100%', fig.cap="Histogram for Age,Puchase and Current City"}
+#pdf("hist_combined.pdf", width = 12, height = 5)
+par(mfrow = c(1,3))
+hist(num_data$Purchase, probability = TRUE,breaks = 30,
+     main = "Histogram for Purchase ", col="maroon")
+lines(density(num_data$Purchase), col = "green", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(num_data$Purchase), col = "purple", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("green", "purple"), legend = c("Density", "Average"))
+
+
+hist(num_data$Age_num, probability = TRUE,breaks = 30,
+     main = "Histogram for Age Num ", col="pink")
+lines(density(num_data$Age_num), col = "red", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(num_data$Age_num), col = "blue", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("pink", "blue"), legend = c("Density", "Average"))
+
+hist(num_data$Stay_In_Current_City_Years, probability = TRUE,breaks = 30,
+     main = "Histogram forCurrent_City_Years ", col="yellow")
+lines(density(num_data$Stay_In_Current_City_Years), col = "grey", lwd = 2, lty = 2)
+# adding a vertical line
+abline(v= mean(num_data$Stay_In_Current_City_Years), col = "brown", lty = 2 , lwd = 2 )
+
+#Legend
+legend("topleft", lty = c(2,2),
+       col = c("green", "purple"), legend = c("Density", "Average"))
+
+#dev.off()
+```
+
+For the descriptive statistics for categorical variables contingency
+tables were used to check the association of the variable together we
+bar plots to distinguish the relationships. Below is a snippet of the
+categorical data-set.
+
+```{r, echo=FALSE,cache.comments=TRUE,comment= NA,include=FALSE}
+cat_data <- data[, c("Gender", "City_Category","Marital_Status")]
+head(cat_data,3)
+```
+
+Contingency table below show the association between gender,City
+category and Marital status
+
+```{r, echo=FALSE,cache.comments=TRUE,fig.height= 3,fig.width=8,warning=FALSE}
+contingency <- table(cat_data$Gender, cat_data$City_Category, cat_data$Marital_Status)
+
+contingency_df <- as.data.frame(as.table(contingency))
+contingency_df$Percentage <- round((contingency_df$Freq / sum(contingency_df$Freq)) * 100, 2)
+
+library(knitr)
+kable(contingency_df, 
+      col.names = c("Gender", "City Category", "Marital Status", "Frequency", "Percentage (%)"),
+      caption = "Three-variable Contingency Table with Percentages")
+
+```
+
+Mosaic plot If the Male section has wider City Category = A rectangles
+compared to City Category = B, it suggests that males are more common in
+City Category = A. If the Single slices are taller than Married slices
+in all sections, it indicates more singles across all combinations.
+
+```{r mosaic-plot, echo=FALSE, fig.height=3, fig.width=8, out.width='100%', fig.cap="Mosaic Plot of Gender, City Categories, and Marital Status"}
+#pdf("plots.pdf", width = 12, height = 5)
+par(mfrow =c(1,3))
+contingency <- table(cat_data$Gender, cat_data$City_Category, cat_data$Marital_Status)
+mosaicplot(contingency, main = "Mosaic Plot", color = TRUE)
+cont <- table(cat_data$Gender, cat_data$City_Category)
+#round((prop.table(contingency)*100),2)
+
+
+barplot(cont, beside = TRUE, col = c("blue", "orange"), 
+        legend = TRUE,
+        main = "Barplot for Gender and City_Category", 
+        xlab = "City_Category", 
+        ylab = "Frequency")
+
+cont_table <- table(cat_data$Marital_Status, cat_data$Gender)
+#round((prop.table(cont_table)*100),2)
+
+barplot(cont_table, beside = TRUE, col = c("pink", "red"),
+        legend = TRUE,
+        main = "Barplot for Gender and Marital Status", 
+        xlab = "Gender",
+        ylab = "Frequency")
+
+
+#dev.off()
+```
+
+Simple Linear Regression Model
+
+```{r, echo=FALSE,cache.comments=TRUE,comment= NA,include=FALSE}
+smodel <- lm(data$Purchase~data$Age_num)
+smodel
+```
+
+```{r, echo=FALSE,cache.comments=TRUE,comment= NA, include=FALSE}
+summary(smodel)
+```
+
+```{r,echo=FALSE,cache.comments=TRUE,comment= NA,include=FALSE}
+vcov(smodel)
+```
+
+2 (a) Fit the model by estimating the intercept, the slope, and the
+underlying uncertainties. (b) Interpret your model. (c) Comment on the
+usefulness of your model. (d) Comment on the limitations of your model.
+(e) Suggest two ways to improve your model.
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+x <- data$Age_num
+y <- data$Purchase
+x_bar <- mean(x)
+y_bar <- mean(y)
+beta_1 <- sum((x- x_bar)*y)/sum((x-x_bar)^2)
+beta_1
+beta_0 <- y_bar - beta_1*x_bar
+beta_0
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+n <- length(data$Gender)
+n
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+fitted_mod <- beta_0 + beta_1*x
+head(fitted_mod)
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+res <- (y - fitted_mod)
+head(res)
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+sigma <- sum((y -fitted_mod)^2)/ (n-2)
+sigma
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+var_beta_0 <- sum(x^2)/(sum((x-x_bar)^2)*n)
+var_beta_0
+```
+
+```{r, include= FALSE,echo=FALSE,cache.comments=TRUE,comment= NA}
+var_beta_1 <- sigma/(sum((x-x_bar)^2))
+var_beta_1
+```
+
+Model Checking of the Assumptions - Linearity - Homoskedasticity -
+Normality
+
+```{r, echo=FALSE,cache.comments=TRUE,comment = NA,fig.height= 3 , fig.width=8, out.width='100%', fig.cap="Plots for Model diagnosis"}
+#pdf("model.pdf",width = 12, height = 5)
+par(mfrow = c(1,3))
+
+# Check for the assumption of Linearity and homoscendasticity
+plot(smodel$residuals ~ smodel$fitted.values)
+
+# Check for the Normality
+qqline(smodel$residuals)
+qqnorm(smodel$residuals)
+
+#Outlier
+plot(smodel, which =4)
+
+#dev.off()
+```
